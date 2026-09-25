@@ -1,15 +1,16 @@
 :root {
   color-scheme: light;
   /* Palet Warna ForeGood Artisan Specialty Coffee */
-  --primary-coffee: #4A2B20;
-  --primary-coffee-dark: #381E15;
-  --accent-caramel: #C49A6C;
-  --bg-cream: #FAF6F0;
-  --card-white: #FFFFFF;
+  --primary-coffee: #4a2b20;
+  --primary-coffee-dark: #381e15;
+  --accent-caramel: #c49a6c;
+  --bg-cream: #faf6f0;
+  --card-white: #ffffff;
   --text-main: #231815;
-  --text-muted: #8E7C74;
-  --line: #EFE7DF;
+  --text-muted: #8e7c74;
+  --line: #efe7df;
   --radius-card: 16px;
+  --success-green: #2e7d32;
 }
 
 * {
@@ -28,13 +29,13 @@ body {
   font-family: "Manrope", sans-serif;
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
-  padding-bottom: 40px;
+  padding-bottom: 90px; /* Ruang ekstra di bawah agar konten tidak tertutup Floating Cart Bar */
 }
 
 /* ---------- Top Bar / App Bar ForeGood ---------- */
 header.top {
   background: var(--primary-coffee);
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 22px 18px 24px;
   box-shadow: 0 4px 12px rgba(74, 43, 32, 0.15);
 }
@@ -51,19 +52,19 @@ header.top {
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: #FFFFFF;
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  overflow: hidden; /* Memotong sisi logo agar mengikuti lengkungan sudut */
+  overflow: hidden;
   padding: 2px;
 }
 
 .brand-logo-img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Menjaga proporsi logo toko agar tetap bulat dan presisi */
+  object-fit: contain;
   display: block;
 }
 
@@ -73,7 +74,7 @@ header.top {
   font-size: 1.15rem;
   margin: 0;
   letter-spacing: -0.2px;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .brandtext p {
@@ -103,7 +104,7 @@ header.top {
 
 .searchbar svg {
   flex-shrink: 0;
-  color: #9E9E9E;
+  color: #9e9e9e;
 }
 
 .searchbar input {
@@ -117,7 +118,7 @@ header.top {
 }
 
 .searchbar input::placeholder {
-  color: #A89B95;
+  color: #a89b95;
   font-weight: 400;
 }
 
@@ -144,8 +145,8 @@ header.top {
   font-size: 0.82rem;
   font-weight: 600;
   background: var(--card-white);
-  border: 1px solid #E0D6CD;
-  color: #5C4A42;
+  border: 1px solid #e0d6cd;
+  color: #5c4a42;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -154,10 +155,10 @@ header.top {
 .pill.active {
   background: var(--primary-coffee);
   border-color: var(--primary-coffee);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
-/* ---------- 2-Column Grid (Sesuai Tampilan Mobile Flutter) ---------- */
+/* ---------- 2-Column Grid ---------- */
 .grid-wrap {
   max-width: 720px;
   margin: 6px auto 0;
@@ -177,7 +178,7 @@ header.top {
   }
 }
 
-/* ---------- Card Styling Persis Flutter UI ---------- */
+/* ---------- Card Styling ---------- */
 .card {
   background: var(--card-white);
   border-radius: var(--radius-card);
@@ -187,7 +188,10 @@ header.top {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  position: relative;
 }
 
 .card:active {
@@ -198,7 +202,7 @@ header.top {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  background: #EFE7DF;
+  background: #efe7df;
   overflow: hidden;
 }
 
@@ -209,14 +213,13 @@ header.top {
   display: block;
 }
 
-
-/* Badge Kategori Melayang di Atas Foto */
+/* Badge Kategori */
 .card .badge {
   position: absolute;
   top: 8px;
   left: 8px;
   background: rgba(0, 0, 0, 0.55);
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 0.68rem;
   font-weight: 700;
   padding: 4px 9px;
@@ -225,6 +228,7 @@ header.top {
   -webkit-backdrop-filter: blur(4px);
   z-index: 2;
   letter-spacing: 0.2px;
+  text-transform: none;
 }
 
 .card .info {
@@ -250,18 +254,41 @@ header.top {
 }
 
 .card .meta-row {
-  margin-top: 6px;
+  margin-top: 10px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
 }
 
 .card .price {
   font-family: "Manrope", sans-serif;
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   color: var(--primary-coffee);
   white-space: nowrap;
+}
+
+/* Tombol + Tambah di Card */
+.btn-add-card {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--bg-cream);
+  border: 1px solid var(--accent-caramel);
+  color: var(--primary-coffee);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-add-card:active {
+  background: var(--primary-coffee);
+  color: #ffffff;
+  transform: scale(0.92);
 }
 
 /* ---------- State Loading / Kosong ---------- */
@@ -290,15 +317,19 @@ header.top {
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .skel-card .imgwrap {
   background: none;
 }
 
-/* ---------- Bottom Sheet Modal (Detail Sajian Modern) ---------- */
+/* ---------- Bottom Sheet Modal (Base) ---------- */
 .overlay {
   position: fixed;
   inset: 0;
@@ -320,7 +351,7 @@ header.top {
 }
 
 .sheet {
-  background: #FFFFFF;
+  background: #ffffff;
   width: 100%;
   max-width: 480px;
   border-radius: 28px 28px 0 0;
@@ -338,7 +369,6 @@ header.top {
   transform: translateY(0);
 }
 
-/* Area pegangan atas khusus untuk swipe down */
 .sheet-drag-area {
   padding: 12px 0 8px;
   display: flex;
@@ -346,7 +376,7 @@ header.top {
   cursor: grab;
   position: sticky;
   top: 0;
-  background: #FFFFFF;
+  background: #ffffff;
   z-index: 5;
 }
 
@@ -354,15 +384,9 @@ header.top {
   width: 42px;
   height: 5px;
   border-radius: 10px;
-  background: #D9CEC3;
-  transition: background 0.2s;
+  background: #d9cec3;
 }
 
-.sheet-drag-area:active .grabber {
-  background: var(--accent-caramel);
-}
-
-/* Kotak Gambar & Tombol Close */
 .sheet-imgbox {
   position: relative;
   padding: 0 16px;
@@ -371,7 +395,7 @@ header.top {
 .sheet .hero {
   width: 100%;
   aspect-ratio: 1 / 1;
-  background: #EFE7DF;
+  background: #efe7df;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
@@ -385,7 +409,6 @@ header.top {
   display: block;
 }
 
-/* Tombol X Bulat Minimalis */
 .closebtn {
   position: absolute;
   top: 10px;
@@ -396,14 +419,16 @@ header.top {
   background: rgba(46, 29, 20, 0.55);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  color: #FFFFFF;
+  color: #ffffff;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 10;
-  transition: transform 0.15s, background 0.15s;
+  transition:
+    transform 0.15s,
+    background 0.15s;
 }
 
 .closebtn:active {
@@ -411,7 +436,6 @@ header.top {
   background: var(--primary-coffee);
 }
 
-/* Isi Konten Detail */
 .sheet .body {
   padding: 16px 20px 36px;
 }
@@ -431,7 +455,7 @@ header.top {
   letter-spacing: 0.4px;
   text-transform: none;
   color: var(--primary-coffee);
-  background: #F1ECE4;
+  background: #f1ece4;
   padding: 4px 10px;
   border-radius: 8px;
   margin-bottom: 8px;
@@ -454,7 +478,6 @@ header.top {
   white-space: nowrap;
 }
 
-/* Kotak Keterangan / Deskripsi */
 .sheet-desc-box {
   background: var(--bg-cream);
   border: 1px solid var(--line);
@@ -475,11 +498,410 @@ header.top {
 .sheet .desc {
   font-size: 0.88rem;
   line-height: 1.6;
-  color: #4A3A34;
+  color: #4a3a34;
   margin: 0;
 }
 
 .sheet .desc.empty {
   color: var(--text-muted);
   font-style: italic;
+}
+
+/* Tombol Tambah ke Pesanan di Sheet Detail Produk */
+.btn-sheet-add {
+  margin-top: 20px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--primary-coffee);
+  color: #ffffff;
+  border: none;
+  font-family: "Manrope", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(74, 43, 32, 0.25);
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.btn-sheet-add:active {
+  transform: scale(0.98);
+  background: var(--primary-coffee-dark);
+}
+
+/* ---------- Floating Cart Bar ---------- */
+.cart-floating-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  width: calc(100% - 32px);
+  max-width: 480px;
+  background: var(--primary-coffee);
+  color: #ffffff;
+  border-radius: 20px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 10px 24px rgba(74, 43, 32, 0.35);
+  transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  z-index: 90;
+}
+
+.cart-floating-bar.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+.cart-bar-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cart-badge-count {
+  font-size: 0.75rem;
+  color: var(--accent-caramel);
+  font-weight: 600;
+}
+
+.cart-total-price {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.btn-view-cart {
+  background: #ffffff;
+  color: var(--primary-coffee);
+  border: none;
+  padding: 10px 18px;
+  border-radius: 14px;
+  font-family: "Manrope", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.btn-view-cart:active {
+  transform: scale(0.95);
+}
+
+/* ---------- Cart Sheet & Checkout Styling ---------- */
+.cart-sheet {
+  padding-bottom: 24px;
+}
+
+.cart-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 20px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cart-sheet-header h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text-main);
+}
+
+.closebtn-inline {
+  background: var(--bg-cream);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.cart-items-list {
+  padding: 10px 20px;
+  max-height: 38vh;
+  overflow-y: auto;
+}
+
+.cart-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.cart-item-detail {
+  flex: 1;
+  padding-right: 12px;
+}
+
+.cart-item-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.cart-item-price {
+  font-size: 0.82rem;
+  color: var(--primary-coffee);
+  font-weight: 600;
+}
+
+.cart-qty-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-cream);
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+
+.btn-qty {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: none;
+  background: #ffffff;
+  color: var(--primary-coffee);
+  font-weight: 800;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.btn-qty:active {
+  transform: scale(0.9);
+}
+
+.qty-number {
+  font-size: 0.88rem;
+  font-weight: 700;
+  min-width: 18px;
+  text-align: center;
+}
+
+.checkout-form {
+  padding: 16px 20px 0;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+
+.form-group label .required {
+  color: #d32f2f;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  font-family: "Manrope", sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  background: var(--bg-cream);
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  border-color: var(--accent-caramel);
+  background: #ffffff;
+}
+
+.bill-summary {
+  background: var(--bg-cream);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin: 14px 0 16px;
+  border: 1px solid var(--line);
+}
+
+.bill-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.bill-row .badge-pay {
+  background: #e8f5e9;
+  color: var(--success-green);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.74rem;
+}
+
+.bill-row.total {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  color: var(--text-main);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.btn-checkout {
+  width: 100%;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--primary-coffee);
+  color: #ffffff;
+  border: none;
+  font-family: "Manrope", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(74, 43, 32, 0.25);
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.btn-checkout:active {
+  transform: scale(0.98);
+  background: var(--primary-coffee-dark);
+}
+
+/* ---------- Artisan Queue Ticket Card ---------- */
+.ticket-card {
+  background: #ffffff;
+  width: calc(100% - 40px);
+  max-width: 380px;
+  margin: auto;
+  border-radius: 24px;
+  padding: 24px 20px;
+  box-shadow: 0 16px 40px rgba(74, 43, 32, 0.25);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transform: scale(0.92);
+  transition: transform 0.28s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.overlay.show .ticket-card {
+  transform: scale(1);
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 2px dashed var(--line);
+}
+
+.ticket-brand {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--primary-coffee);
+}
+
+.ticket-status-badge {
+  background: #fff3e0;
+  color: #e65100;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 8px;
+  text-transform: uppercase;
+}
+
+.ticket-body {
+  padding: 24px 0 18px;
+}
+
+.ticket-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+  font-weight: 700;
+}
+
+.ticket-number {
+  font-family: "Fraunces", serif;
+  font-size: 3.4rem;
+  font-weight: 700;
+  color: var(--primary-coffee);
+  line-height: 1.1;
+  margin: 4px 0;
+}
+
+.ticket-customer {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 14px;
+}
+
+.ticket-instruction {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #6b5b53;
+  background: var(--bg-cream);
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin: 0 0 16px;
+}
+
+.ticket-total-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+}
+
+.ticket-total-box strong {
+  font-size: 1.15rem;
+  color: var(--primary-coffee);
+}
+
+.btn-ticket-close {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--bg-cream);
+  color: var(--primary-coffee);
+  border: 1px solid var(--accent-caramel);
+  font-family: "Manrope", sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-ticket-close:active {
+  background: var(--primary-coffee);
+  color: #ffffff;
 }

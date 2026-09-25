@@ -3,20 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Mencegah browser HP memaksakan invert/ubah warna tema secara sepihak -->
-    <meta name="color-scheme" content="light only" />
-    <title>Foregood Coffee & More — Katalog Produk</title>
+    <!-- Cegah browser HP memaksakan invert tema warna -->
+    <meta name="color-scheme" content="only light" />
+    <meta name="supported-color-schemes" content="light" />
+    <meta name="theme-color" content="#4A2B20" />
+    <title>Foregood Coffee & More — Self Order</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="style.css?v=1.5" />
+    <link rel="stylesheet" href="style.css?v=2.0" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   </head>
   <body>
+    <!-- Header ForeGood -->
     <header class="top">
       <div class="brandrow">
         <div class="brandmark">
@@ -28,11 +31,12 @@
         </div>
         <div class="brandtext">
           <h1>Foregood Coffee &amp; More</h1>
-          <p>Katalog menu</p>
+          <p>Order langsung tanpa antri lama</p>
         </div>
       </div>
     </header>
 
+    <!-- Search Bar -->
     <div class="controls">
       <div class="searchbar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -58,17 +62,140 @@
       </div>
     </div>
 
+    <!-- Filter Chips Kategori -->
     <nav class="pills" id="pillRow"></nav>
 
+    <!-- Grid Menu Produk -->
     <main class="grid-wrap">
       <div class="grid" id="grid"></div>
     </main>
 
+    <!-- Floating Cart Bar (Muncul Mengambang di Bawah) -->
+    <div class="cart-floating-bar" id="cartBar">
+      <div class="cart-bar-info">
+        <div class="cart-badge-count" id="cartCount">0 Item</div>
+        <div class="cart-total-price" id="cartTotalPrice">Rp 0</div>
+      </div>
+      <button class="btn-view-cart" id="btnOpenCart">
+        <span>Lihat Pesanan</span>
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Bottom Sheet Modal (Detail Produk) -->
     <div class="overlay" id="overlay">
       <div class="sheet" id="sheet"></div>
     </div>
 
-    <script src="script.js"></script>
-    <script src="script.js?v=1.5"></script>
+    <!-- Bottom Sheet Modal (Keranjang Belanja & Checkout) -->
+    <div class="overlay" id="cartOverlay">
+      <div class="sheet cart-sheet" id="cartSheet">
+        <div class="sheet-drag-area">
+          <div class="grabber"></div>
+        </div>
+        <div class="cart-sheet-header">
+          <h2>Rincian Pesanan</h2>
+          <button class="closebtn-inline" id="btnCloseCart" aria-label="Tutup">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            >
+              <path d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="cart-items-list" id="cartItemsList">
+          <!-- Item keranjang diisi lewat JS -->
+        </div>
+
+        <div class="checkout-form">
+          <div class="form-group">
+            <label for="custName"
+              >Nama Pemesan <span class="required">*</span></label
+            >
+            <input
+              type="text"
+              id="custName"
+              placeholder="Contoh: Budi (untuk dipanggil)"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="custWa">Nomor WhatsApp (Opsional)</label>
+            <input type="tel" id="custWa" placeholder="Contoh: 081234567890" />
+          </div>
+
+          <div class="form-group">
+            <label for="custNote">Catatan Khusus (Opsional)</label>
+            <input
+              type="text"
+              id="custNote"
+              placeholder="Contoh: Kopi susunya less sweet ya"
+            />
+          </div>
+          <div class="bill-summary">
+            <div class="bill-row">
+              <span>Metode Pembayaran</span>
+              <span class="badge-pay">Bayar di Kasir (QRIS / Tunai)</span>
+            </div>
+            <div class="bill-row total">
+              <span>Total Pembayaran</span>
+              <span id="sheetTotalPrice">Rp 0</span>
+            </div>
+          </div>
+          <button class="btn-checkout" id="btnSubmitOrder">
+            Kirim Pesanan Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Tiket Antrean (Tampil Sukses Order) -->
+    <div class="overlay" id="queueOverlay">
+      <div class="ticket-card" id="ticketCard">
+        <div class="ticket-header">
+          <div class="ticket-brand">Foregood Coffee & More</div>
+          <span class="ticket-status-badge">Menunggu Pembayaran</span>
+        </div>
+        <div class="ticket-body">
+          <p class="ticket-label">Nomor Antrean Anda</p>
+          <div class="ticket-number" id="ticketNumber">#000</div>
+          <h3 class="ticket-customer" id="ticketCustomer">Nama Customer</h3>
+          <p class="ticket-instruction">
+            Silakan tunjukkan nomor antrean ini ke kasir/booth untuk pembayaran
+            <b>Tunai</b> atau scan <b>QRIS</b>.
+          </p>
+          <div class="ticket-total-box">
+            <span>Total Tagihan:</span>
+            <strong id="ticketTotal">Rp 0</strong>
+          </div>
+        </div>
+        <div class="ticket-footer">
+          <button class="btn-ticket-close" id="btnCloseTicket">
+            Tutup & Kembali ke Menu
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js?v=2.0"></script>
   </body>
 </html>

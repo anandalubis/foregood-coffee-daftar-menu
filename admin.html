@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="only light" />
+    <title>ForeGood — Dashboard Kasir & Antrean</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css?v=2.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <style>
+      .admin-body {
+        background-color: #F4EFEB;
+        padding-bottom: 40px;
+      }
+      .admin-nav {
+        background: var(--primary-coffee);
+        color: #fff;
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(74, 43, 32, 0.12);
+      }
+      .admin-nav h1 {
+        font-size: 1.05rem;
+        margin: 0;
+        font-weight: 700;
+      }
+      .admin-nav .btn-logout {
+        background: transparent;
+        border: 1px solid var(--accent-caramel);
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      /* Container Login */
+      .login-container {
+        max-width: 360px;
+        margin: 80px auto;
+        padding: 24px;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 8px 24px rgba(74, 43, 32, 0.08);
+      }
+      .login-container h2 {
+        margin: 0 0 6px;
+        font-size: 1.25rem;
+        color: var(--primary-coffee);
+      }
+      .login-container p {
+        margin: 0 0 20px;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+      }
+      .login-form .form-group {
+        margin-bottom: 14px;
+      }
+      .login-form label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .login-form input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        font-size: 0.9rem;
+      }
+      .btn-admin-login {
+        width: 100%;
+        padding: 12px;
+        background: var(--primary-coffee);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+
+      /* Layout Dashboard Antrean */
+      .queue-board {
+        max-width: 1100px;
+        margin: 24px auto;
+        padding: 0 16px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 16px;
+      }
+      .order-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(224, 214, 205, 0.8);
+        padding: 16px;
+        box-shadow: 0 4px 12px rgba(74, 43, 32, 0.04);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .order-card.menunggu_pembayaran {
+        border-top: 5px solid #E65100;
+      }
+      .order-card.diproses {
+        border-top: 5px solid #1976D2;
+      }
+      .order-card.siap_diambil {
+        border-top: 5px solid #2E7D32;
+      }
+
+      .order-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px dashed var(--line);
+      }
+      .order-num {
+        font-family: "Fraunces", serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-coffee);
+      }
+      .order-time {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+      .order-status-badge {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 6px;
+        text-transform: uppercase;
+      }
+      .badge-menunggu {
+        background: #FFF3E0;
+        color: #E65100;
+      }
+      .badge-proses {
+        background: #E3F2FD;
+        color: #1976D2;
+      }
+      .badge-siap {
+        background: #E8F5E9;
+        color: #2E7D32;
+      }
+
+      .order-cust-info {
+        margin-bottom: 10px;
+      }
+      .order-cust-name {
+        font-weight: 800;
+        font-size: 1rem;
+        color: var(--text-main);
+      }
+      .order-cust-wa {
+        font-size: 0.8rem;
+        color: var(--accent-caramel);
+        font-weight: 600;
+      }
+      .order-cust-note {
+        font-size: 0.8rem;
+        background: var(--bg-cream);
+        padding: 6px 10px;
+        border-radius: 8px;
+        margin-top: 6px;
+        color: #55443D;
+      }
+
+      .order-items-box {
+        margin: 10px 0;
+        padding: 8px 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+      .order-item-line {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+      }
+      .order-total-row {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 800;
+        font-size: 0.95rem;
+        margin: 8px 0 14px;
+        color: var(--primary-coffee);
+      }
+
+      .order-action-btns {
+        display: flex;
+        gap: 8px;
+      }
+      .btn-action {
+        flex: 1;
+        padding: 9px;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.15s;
+      }
+      .btn-action:active {
+        opacity: 0.8;
+      }
+      .btn-pay {
+        background: #E65100;
+        color: #fff;
+      }
+      .btn-ready {
+        background: #1976D2;
+        color: #fff;
+      }
+      .btn-done {
+        background: #2E7D32;
+        color: #fff;
+      }
+      .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+      }
+    </style>
+  </head>
+  <body class="admin-body">
+    <!-- Navbar Admin -->
+    <header class="admin-nav" id="adminNav" style="display: none;">
+      <h1>ForeGood — Bar / Kasir Display</h1>
+      <button class="btn-logout" id="btnLogout">Keluar</button>
+    </header>
+
+    <!-- Modal / Form Login -->
+    <div class="login-container" id="loginBox">
+      <h2>Masuk Kasir</h2>
+      <p>Akses dashboard antrean dan operasional booth.</p>
+      <form class="login-form" id="formLogin">
+        <div class="form-group">
+          <label for="adminEmail">Email</label>
+          <input type="email" id="adminEmail" required placeholder="admin@foregood.com" />
+        </div>
+        <div class="form-group">
+          <label for="adminPassword">Kata Sandi</label>
+          <input type="password" id="adminPassword" required placeholder="••••••••" />
+        </div>
+        <button type="submit" class="btn-admin-login" id="btnLogin">Masuk</button>
+      </form>
+    </div>
+
+    <!-- Papan Antrean (FIFO) -->
+    <main class="queue-board" id="queueBoard" style="display: none;">
+      <!-- Kartu-kartu pesanan dirender via admin.js -->
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
