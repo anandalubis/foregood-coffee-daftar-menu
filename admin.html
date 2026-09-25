@@ -14,7 +14,7 @@
     />
     <link rel="stylesheet" href="style.css?v=2.1" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <link rel="stylesheet" href="admin.css?v=1.0" />
+    <link rel="stylesheet" href="admin.css?v=1.1" />
     <style></style>
   </head>
   <body class="admin-body">
@@ -42,20 +42,24 @@
           id="tabQueue"
           onclick="switchTab('queue')"
         >
-          Antrean Pesanan
+          <span class="tab-label-desktop">Antrean Pesanan</span>
+          <span class="tab-label-mobile">Antrean</span>
         </button>
         <button class="tab-btn" id="tabMenu" onclick="switchTab('menu')">
-          Kelola Menu
+          <span class="tab-label-desktop">Kelola Menu</span>
+          <span class="tab-label-mobile">Menu</span>
         </button>
         <button
           class="tab-btn"
           id="tabCategory"
           onclick="switchTab('category')"
         >
-          Kelola Kategori
+          <span class="tab-label-desktop">Kelola Kategori</span>
+          <span class="tab-label-mobile">Kategori</span>
         </button>
         <button class="tab-btn" id="tabHistory" onclick="switchTab('history')">
-          Riwayat
+          <span class="tab-label-desktop">Riwayat</span>
+          <span class="tab-label-mobile">Riwayat</span>
         </button>
       </nav>
 
@@ -123,7 +127,6 @@
       </div>
     </header>
 
-    <!-- Modal / Form Login -->
     <!-- KONTEN LOGIN ARTISAN DENGAN LOGO FOREGOOD -->
     <div class="login-wrapper" id="loginBox">
       <div class="login-card">
@@ -621,19 +624,24 @@
             <label for="menuKategori"
               >Kategori Menu <span class="required">*</span></label
             >
-            <select
-              id="menuKategori"
-              required
-              style="
-                width: 100%;
-                padding: 11px 14px;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                font-family: &quot;Manrope&quot;, sans-serif;
-                background: #fff;
-                font-size: 0.9rem;
-              "
-            ></select>
+            <div class="category-select" id="categorySelect">
+              <select id="menuKategori" required aria-hidden="true"></select>
+              <button
+                type="button"
+                class="category-select-trigger"
+                id="menuKategoriTrigger"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+              >
+                <span id="menuKategoriTriggerText">Pilih Kategori</span>
+                <span class="category-select-chevron">⌄</span>
+              </button>
+              <div
+                class="category-select-options"
+                id="menuKategoriOptions"
+                role="listbox"
+              ></div>
+            </div>
           </div>
 
           <div class="form-group">

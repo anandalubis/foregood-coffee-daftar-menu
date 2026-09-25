@@ -13,7 +13,6 @@ const menuBoard = document.getElementById("menuBoard");
 const tabQueue = document.getElementById("tabQueue");
 const tabMenu = document.getElementById("tabMenu");
 const formLogin = document.getElementById("formLogin");
-const btnLogout = document.getElementById("btnLogout");
 const modalResetQueue = document.getElementById("modalResetQueue");
 const btnConfirmResetQueue = document.getElementById("btnConfirmResetQueue");
 
@@ -28,6 +27,11 @@ const menuNameInput = document.getElementById("menuName");
 const menuKategoriSelect = document.getElementById("menuKategori");
 const menuPriceInput = document.getElementById("menuPrice");
 const menuDescInput = document.getElementById("menuDesc");
+const menuKategoriTrigger = document.getElementById("menuKategoriTrigger");
+const menuKategoriTriggerText = document.getElementById(
+  "menuKategoriTriggerText",
+);
+const menuKategoriOptions = document.getElementById("menuKategoriOptions");
 const imgPreview = document.getElementById("imgPreview");
 const photoPickerOverlay = document.getElementById("photoPickerOverlay");
 const photoPickerSheet = document.getElementById("photoPickerSheet");
@@ -44,7 +48,6 @@ const formCategory = document.getElementById("formCategory");
 const modalCategoryTitle = document.getElementById("modalCategoryTitle");
 const categoryIdInput = document.getElementById("categoryId");
 const categoryNameInput = document.getElementById("categoryName");
-const categoryDescInput = document.getElementById("categoryDesc");
 const btnSaveCategory = document.getElementById("btnSaveCategory");
 const toastNotification = document.getElementById("toastNotification");
 const toastMessage = document.getElementById("toastMessage");
@@ -63,9 +66,6 @@ const historySearchInput = document.getElementById("historySearchInput");
 // Elemen Dropdown Profil
 const profileTrigger = document.getElementById("profileTrigger");
 const profileDropdown = document.getElementById("profileDropdown");
-const dropdownAdminName = document.getElementById("dropdownAdminName");
-const dropdownAdminEmail = document.getElementById("dropdownAdminEmail");
-const avatarInitial = document.getElementById("avatarInitial");
 
 const modalConfirmLogout = document.getElementById("modalConfirmLogout");
 const btnExecuteLogout = document.getElementById("btnExecuteLogout");
@@ -191,20 +191,6 @@ document.addEventListener("click", (e) => {
     profileTrigger.classList.remove("active");
   }
 });
-
-// Update data info profil saat login berhasil
-function updateAdminProfileUI(sessionUser) {
-  if (!sessionUser) return;
-  const email = sessionUser.email || "admin@foregood.com";
-  const name = email.split("@")[0].toUpperCase();
-
-  if (dropdownAdminName) dropdownAdminName.textContent = name;
-  if (dropdownAdminEmail) dropdownAdminEmail.textContent = email;
-  if (avatarInitial) avatarInitial.textContent = name.charAt(0);
-}
-
-// Panggil fungsi ini di dalam handler login sukses atau saat auth check:
-// updateAdminProfileUI(user);
 
 let allHistoryOrders = []; // Menyimpan cache untuk pencarian cepat
 
@@ -348,13 +334,11 @@ window.switchTab = function (tab) {
 
 // Fungsi memuat data kategori beserta jumlah produknya
 async function loadAdminCategories() {
-  const [
-    { data: categories, error: catErr },
-    { data: products, error: prodErr },
-  ] = await Promise.all([
-    supa.from("kategori").select("id, nama").order("id", { ascending: true }),
-    supa.from("produk").select("kategori_id"),
-  ]);
+  const [{ data: categories, error: catErr }, { data: products }] =
+    await Promise.all([
+      supa.from("kategori").select("id, nama").order("id", { ascending: true }),
+      supa.from("produk").select("kategori_id"),
+    ]);
 
   if (catErr) {
     console.error(catErr);
@@ -537,7 +521,7 @@ async function checkAuth() {
 }
 
 function showLogin() {
-  loginBox.style.display = "block";
+  loginBox.style.display = "flex";
   adminHeader.style.display = "none";
   queueSection.style.display = "none";
   menuBoard.style.display = "none";
@@ -545,7 +529,7 @@ function showLogin() {
 
 function showDashboard() {
   loginBox.style.display = "none";
-  adminHeader.style.display = "flex";
+  adminHeader.style.removeProperty("display");
   queueSection.style.display = "none";
   switchTab(currentTab);
   loadCategories();
@@ -576,10 +560,6 @@ window.handleLogout = async function () {
   await supa.auth.signOut();
   showLogin();
 };
-
-if (btnLogout) {
-  btnLogout.addEventListener("click", handleLogout);
-}
 
 // ----------------------------------------------------
 // 2. KELOLA ANTREAN (FIFO) & REALTIME
@@ -753,8 +733,66 @@ async function loadCategories() {
     menuKategoriSelect.innerHTML = data
       .map((c) => `<option value="${c.id}">${c.nama}</option>`)
       .join("");
+    renderCategorySelect();
   }
 }
+
+function renderCategorySelect() {
+  if (!menuKategoriSelect || !menuKategoriOptions || !menuKategoriTriggerText) {
+    return;
+  }
+
+  const options = [...menuKategoriSelect.options];
+  const selectedOption = menuKategoriSelect.selectedOptions[0] || options[0];
+
+  if (selectedOption) {
+    menuKategoriSelect.value = selectedOption.value;
+    menuKategoriTriggerText.textContent = selectedOption.textContent;
+  }
+
+  menuKategoriOptions.innerHTML = options
+    .map(
+      (option) => `
+        <button
+          type="button"
+          class="category-select-option${option.selected ? " selected" : ""}"
+          role="option"
+          aria-selected="${option.selected}"
+          data-value="${option.value}"
+        >${option.textContent}</button>`,
+    )
+    .join("");
+}
+
+function closeCategorySelect() {
+  if (!menuKategoriOptions || !menuKategoriTrigger) return;
+  menuKategoriOptions.classList.remove("show");
+  menuKategoriTrigger.setAttribute("aria-expanded", "false");
+}
+
+if (menuKategoriTrigger) {
+  menuKategoriTrigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = menuKategoriOptions.classList.toggle("show");
+    menuKategoriTrigger.setAttribute("aria-expanded", String(isOpen));
+  });
+}
+
+if (menuKategoriOptions) {
+  menuKategoriOptions.addEventListener("click", (e) => {
+    const option = e.target.closest(".category-select-option");
+    if (!option) return;
+
+    menuKategoriSelect.value = option.dataset.value;
+    menuKategoriSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    renderCategorySelect();
+    closeCategorySelect();
+  });
+}
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("#categorySelect")) closeCategorySelect();
+});
 
 // ----------------------------------------------------
 // 4. RIWAYAT PESANAN SELESAI
@@ -838,10 +876,10 @@ function renderHistoryOrders(orders) {
           <div class="history-items-chips">
             ${itemsHtml}
           </div>
+        </div>
 
-          <div class="history-total-price">
-            ${formatRupiah(o.total_harga)}
-          </div>
+        <div class="history-total-price">
+          ${formatRupiah(o.total_harga)}
         </div>
       </div>`;
     })
@@ -978,6 +1016,7 @@ window.openAddMenuModal = function () {
   menuIdInput.value = "";
   menuExistingUrlInput.value = "";
   selectedFileToUpload = null;
+  renderCategorySelect();
 
   imgPreview.src = "";
   imgPreview.style.display = "none";
@@ -997,6 +1036,7 @@ window.openEditMenuModal = function (product) {
 
   menuNameInput.value = product.nama;
   menuKategoriSelect.value = product.kategori_id;
+  renderCategorySelect();
   menuPriceInput.value = product.harga;
   menuDescInput.value = product.deskripsi || "";
 

@@ -45,7 +45,6 @@ const btnCloseTicket = document.getElementById("btnCloseTicket");
 const floatingTrackerPill = document.getElementById("floatingTrackerPill");
 const floatingPillText = document.getElementById("floatingPillText");
 const ticketBadge = document.getElementById("ticketBadge");
-const ticketInstructionBox = document.getElementById("ticketInstructionBox");
 const ticketInstructionText = document.getElementById("ticketInstructionText");
 const step1 = document.getElementById("step1");
 const step2 = document.getElementById("step2");
@@ -628,12 +627,14 @@ function openDetail(id) {
     <div class="sheet-drag-area" id="sheetDragArea">
       <div class="grabber"></div>
     </div>
-    <div class="sheet-imgbox">
+    <div class="sheet-closebar">
       <button class="closebtn" id="closeBtn" aria-label="Tutup">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
           <path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
         </svg>
       </button>
+    </div>
+    <div class="sheet-imgbox">
       <div class="hero">
         <img src="${p.gambar_url || ""}" alt="${p.nama}" onerror="this.style.opacity=0">
       </div>
