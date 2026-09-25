@@ -106,6 +106,9 @@
         </div>
         <div class="cart-sheet-header">
           <h2>Rincian Pesanan</h2>
+          <button type="button" class="btn-clear-cart" id="btnClearCart">
+            Kosongkan
+          </button>
           <button class="closebtn-inline" id="btnCloseCart" aria-label="Tutup">
             <svg
               width="16"
@@ -148,7 +151,7 @@
             <input
               type="text"
               id="custNote"
-              placeholder="Contoh: Kopi susunya less sweet ya"
+              placeholder="Contoh: Kopi susunya less sugar ya"
             />
           </div>
           <div class="bill-summary">
@@ -168,29 +171,112 @@
       </div>
     </div>
 
-    <!-- Modal Tiket Antrean (Tampil Sukses Order) -->
-    <div class="overlay" id="queueOverlay">
+    <!-- Floating Tracker Pill (Muncul jika tiket ditutup tapi pesanan masih aktif) -->
+    <div
+      id="floatingTrackerPill"
+      class="floating-tracker-pill"
+      onclick="reopenTicketModal()"
+    >
+      <span class="pulse-dot"></span>
+      <span id="floatingPillText">Antrean #000 • Memuat...</span>
+    </div>
+
+    <!-- Modal Tiket Antrean & Live Stepper -->
+    <div class="overlay queue-overlay" id="queueOverlay">
       <div class="ticket-card" id="ticketCard">
+        <!-- Header Tiket -->
         <div class="ticket-header">
-          <div class="ticket-brand">Foregood Coffee & More</div>
-          <span class="ticket-status-badge">Menunggu Pembayaran</span>
+          <span class="ticket-brand">Foregood Coffee & More</span>
+          <span class="ticket-badge status-menunggu" id="ticketBadge"
+            >MENUNGGU PEMBAYARAN</span
+          >
         </div>
+
+        <div class="ticket-divider"></div>
+
+        <!-- Nomor Antrean & Nama Pelanggan -->
         <div class="ticket-body">
-          <p class="ticket-label">Nomor Antrean Anda</p>
+          <div class="ticket-sublabel">NOMOR ANTREAN ANDA</div>
           <div class="ticket-number" id="ticketNumber">#000</div>
-          <h3 class="ticket-customer" id="ticketCustomer">Nama Customer</h3>
-          <p class="ticket-instruction">
-            Silakan tunjukkan nomor antrean ini ke kasir/booth untuk pembayaran
-            <b>Tunai</b> atau scan <b>QRIS</b>.
-          </p>
-          <div class="ticket-total-box">
-            <span>Total Tagihan:</span>
-            <strong id="ticketTotal">Rp 0</strong>
+          <div class="ticket-customer" id="ticketCustomer">-</div>
+        </div>
+
+        <!-- STEPPER PROGRESS INDIKATOR -->
+        <div class="order-stepper">
+          <!-- Step 1 -->
+          <div class="step-item active" id="step1">
+            <div class="step-circle">1</div>
+            <span class="step-label">Bayar</span>
+          </div>
+          <div class="step-line" id="line1"></div>
+
+          <!-- Step 2 -->
+          <div class="step-item" id="step2">
+            <div class="step-circle">2</div>
+            <span class="step-label">Racik</span>
+          </div>
+          <div class="step-line" id="line2"></div>
+
+          <!-- Step 3 -->
+          <div class="step-item" id="step3">
+            <div class="step-circle">3</div>
+            <span class="step-label">Siap</span>
           </div>
         </div>
-        <div class="ticket-footer">
-          <button class="btn-ticket-close" id="btnCloseTicket">
-            Tutup & Kembali ke Menu
+
+        <!-- Pesan Instruksi Dinamis -->
+        <div class="ticket-instruction-box" id="ticketInstructionBox">
+          <p id="ticketInstructionText">
+            Silakan tunjukkan nomor antrean ini ke kasir/booth untuk pembayaran
+            Tunai atau scan QRIS.
+          </p>
+        </div>
+
+        <!-- Ringkasan Tagihan -->
+        <div class="ticket-footer-row">
+          <span>Total Tagihan:</span>
+          <strong id="ticketTotal">Rp 0</strong>
+        </div>
+
+        <!-- Tombol Aksi Bawah -->
+        <button type="button" class="btn-ticket-action" id="btnCloseTicket">
+          Tutup & Kembali ke Menu
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Konfirmasi Kosongkan Keranjang -->
+    <div class="overlay center-modal-overlay" id="confirmClearOverlay">
+      <div class="center-modal-card">
+        <div class="center-modal-icon warning-icon">
+          <svg
+            width="26"
+            height="26"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 6h18" />
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+            <line x1="10" y1="11" x2="10" y2="17" />
+            <line x1="14" y1="11" x2="14" y2="17" />
+          </svg>
+        </div>
+        <h3>Kosongkan Keranjang?</h3>
+        <p>
+          Semua sajian menu yang sudah kamu pilih akan dihapus dari daftar
+          pesanan.
+        </p>
+        <div class="center-modal-actions">
+          <button type="button" class="btn-modal-cancel" id="btnCancelClear">
+            Batal
+          </button>
+          <button type="button" class="btn-modal-danger" id="btnExecuteClear">
+            Kosongkan
           </button>
         </div>
       </div>

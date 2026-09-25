@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="only light" />
-    <title>ForeGood — Dashboard Kasir & Antrean</title>
+    <title>ForeGood — Dashboard Admin & Kelola Menu</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,263 +12,1136 @@
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css?v=2.0" />
+    <link rel="stylesheet" href="style.css?v=2.1" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-
-    <style>
-      .admin-body {
-        background-color: #F4EFEB;
-        padding-bottom: 40px;
-      }
-      .admin-nav {
-        background: var(--primary-coffee);
-        color: #fff;
-        padding: 16px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 4px 12px rgba(74, 43, 32, 0.12);
-      }
-      .admin-nav h1 {
-        font-size: 1.05rem;
-        margin: 0;
-        font-weight: 700;
-      }
-      .admin-nav .btn-logout {
-        background: transparent;
-        border: 1px solid var(--accent-caramel);
-        color: #fff;
-        padding: 6px 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 0.8rem;
-        font-weight: 600;
-      }
-
-      /* Container Login */
-      .login-container {
-        max-width: 360px;
-        margin: 80px auto;
-        padding: 24px;
-        background: #fff;
-        border-radius: 18px;
-        box-shadow: 0 8px 24px rgba(74, 43, 32, 0.08);
-      }
-      .login-container h2 {
-        margin: 0 0 6px;
-        font-size: 1.25rem;
-        color: var(--primary-coffee);
-      }
-      .login-container p {
-        margin: 0 0 20px;
-        font-size: 0.82rem;
-        color: var(--text-muted);
-      }
-      .login-form .form-group {
-        margin-bottom: 14px;
-      }
-      .login-form label {
-        display: block;
-        font-size: 0.8rem;
-        font-weight: 700;
-        margin-bottom: 4px;
-      }
-      .login-form input {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        font-size: 0.9rem;
-      }
-      .btn-admin-login {
-        width: 100%;
-        padding: 12px;
-        background: var(--primary-coffee);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        margin-top: 10px;
-      }
-
-      /* Layout Dashboard Antrean */
-      .queue-board {
-        max-width: 1100px;
-        margin: 24px auto;
-        padding: 0 16px;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 16px;
-      }
-      .order-card {
-        background: #fff;
-        border-radius: 16px;
-        border: 1px solid rgba(224, 214, 205, 0.8);
-        padding: 16px;
-        box-shadow: 0 4px 12px rgba(74, 43, 32, 0.04);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-      .order-card.menunggu_pembayaran {
-        border-top: 5px solid #E65100;
-      }
-      .order-card.diproses {
-        border-top: 5px solid #1976D2;
-      }
-      .order-card.siap_diambil {
-        border-top: 5px solid #2E7D32;
-      }
-
-      .order-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 10px;
-        padding-bottom: 8px;
-        border-bottom: 1px dashed var(--line);
-      }
-      .order-num {
-        font-family: "Fraunces", serif;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-coffee);
-      }
-      .order-time {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-      }
-      .order-status-badge {
-        display: inline-block;
-        font-size: 0.7rem;
-        font-weight: 700;
-        padding: 3px 8px;
-        border-radius: 6px;
-        text-transform: uppercase;
-      }
-      .badge-menunggu {
-        background: #FFF3E0;
-        color: #E65100;
-      }
-      .badge-proses {
-        background: #E3F2FD;
-        color: #1976D2;
-      }
-      .badge-siap {
-        background: #E8F5E9;
-        color: #2E7D32;
-      }
-
-      .order-cust-info {
-        margin-bottom: 10px;
-      }
-      .order-cust-name {
-        font-weight: 800;
-        font-size: 1rem;
-        color: var(--text-main);
-      }
-      .order-cust-wa {
-        font-size: 0.8rem;
-        color: var(--accent-caramel);
-        font-weight: 600;
-      }
-      .order-cust-note {
-        font-size: 0.8rem;
-        background: var(--bg-cream);
-        padding: 6px 10px;
-        border-radius: 8px;
-        margin-top: 6px;
-        color: #55443D;
-      }
-
-      .order-items-box {
-        margin: 10px 0;
-        padding: 8px 0;
-        border-top: 1px solid var(--line);
-        border-bottom: 1px solid var(--line);
-      }
-      .order-item-line {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.85rem;
-        margin-bottom: 4px;
-      }
-      .order-total-row {
-        display: flex;
-        justify-content: space-between;
-        font-weight: 800;
-        font-size: 0.95rem;
-        margin: 8px 0 14px;
-        color: var(--primary-coffee);
-      }
-
-      .order-action-btns {
-        display: flex;
-        gap: 8px;
-      }
-      .btn-action {
-        flex: 1;
-        padding: 9px;
-        border: none;
-        border-radius: 10px;
-        font-size: 0.82rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: opacity 0.15s;
-      }
-      .btn-action:active {
-        opacity: 0.8;
-      }
-      .btn-pay {
-        background: #E65100;
-        color: #fff;
-      }
-      .btn-ready {
-        background: #1976D2;
-        color: #fff;
-      }
-      .btn-done {
-        background: #2E7D32;
-        color: #fff;
-      }
-      .empty-state {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 60px 20px;
-        color: var(--text-muted);
-      }
-    </style>
+    <link rel="stylesheet" href="admin.css?v=1.0" />
+    <style></style>
   </head>
   <body class="admin-body">
-    <!-- Navbar Admin -->
-    <header class="admin-nav" id="adminNav" style="display: none;">
-      <h1>ForeGood — Bar / Kasir Display</h1>
-      <button class="btn-logout" id="btnLogout">Keluar</button>
+    <!-- HEADER ADMIN MODERN (KIRI: LOGO | TENGAH: NAV TABS | KANAN: PROFILE DROPDOWN) -->
+    <header class="admin-header" id="adminHeader" style="display: none">
+      <!-- SISI KIRI: Brand & Logo -->
+      <div class="admin-brand-wrap">
+        <div class="header-logo-circle">
+          <img
+            src="logo_foregood.png"
+            alt="ForeGood Logo"
+            class="header-logo-img"
+          />
+        </div>
+        <div class="header-brand-text">
+          <span class="brand-title">ForeGood</span>
+          <span class="brand-badge">POS Admin</span>
+        </div>
+      </div>
+
+      <!-- SISI TENGAH: Tab Navigasi -->
+      <nav class="admin-tabs" id="adminTabsNav">
+        <button
+          class="tab-btn active"
+          id="tabQueue"
+          onclick="switchTab('queue')"
+        >
+          Antrean Pesanan
+        </button>
+        <button class="tab-btn" id="tabMenu" onclick="switchTab('menu')">
+          Kelola Menu
+        </button>
+        <button
+          class="tab-btn"
+          id="tabCategory"
+          onclick="switchTab('category')"
+        >
+          Kelola Kategori
+        </button>
+        <button class="tab-btn" id="tabHistory" onclick="switchTab('history')">
+          Riwayat
+        </button>
+      </nav>
+
+      <!-- SISI KANAN: Avatar Profil & Dropdown -->
+      <div class="admin-profile-section">
+        <div
+          class="profile-trigger"
+          id="profileTrigger"
+          onclick="toggleProfileDropdown(event)"
+        >
+          <div class="avatar-ring">
+            <div class="avatar-circle">
+              <!-- Inisial atau Ikon Avatar -->
+              <span id="avatarInitial">A</span>
+            </div>
+            <span class="status-online-dot"></span>
+          </div>
+          <svg
+            class="dropdown-arrow-icon"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+
+        <!-- Menu Dropdown Melayang -->
+        <div class="profile-dropdown-card" id="profileDropdown">
+          <div class="dropdown-user-info">
+            <h4 id="dropdownAdminName">Admin ForeGood</h4>
+            <p id="dropdownAdminEmail">admin@foregood.com</p>
+            <span class="role-badge">Owner / Head Barista</span>
+          </div>
+
+          <div class="dropdown-divider"></div>
+
+          <button
+            type="button"
+            class="dropdown-item logout-btn"
+            onclick="openLogoutModal()"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Keluar Akun</span>
+          </button>
+        </div>
+      </div>
     </header>
 
     <!-- Modal / Form Login -->
-    <div class="login-container" id="loginBox">
-      <h2>Masuk Kasir</h2>
-      <p>Akses dashboard antrean dan operasional booth.</p>
-      <form class="login-form" id="formLogin">
-        <div class="form-group">
-          <label for="adminEmail">Email</label>
-          <input type="email" id="adminEmail" required placeholder="admin@foregood.com" />
+    <!-- KONTEN LOGIN ARTISAN DENGAN LOGO FOREGOOD -->
+    <div class="login-wrapper" id="loginBox">
+      <div class="login-card">
+        <!-- Logo & Header Branding -->
+        <div class="login-brand-header">
+          <div class="login-logo-circle">
+            <img
+              src="logo_foregood.png"
+              alt="ForeGood Coffee Logo"
+              class="login-logo-img"
+            />
+          </div>
+          <h2>Admin ForeGood</h2>
+          <p>Masuk ke portal kasir & manajemen katalog kafe</p>
         </div>
-        <div class="form-group">
-          <label for="adminPassword">Kata Sandi</label>
-          <input type="password" id="adminPassword" required placeholder="••••••••" />
+
+        <!-- Form Login -->
+        <form class="login-form" id="formLogin">
+          <div class="form-group-modern">
+            <label for="adminEmail">Email Kasir / Owner</label>
+            <div class="input-with-icon">
+              <span class="field-icon">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                  />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+              </span>
+              <input
+                type="email"
+                id="adminEmail"
+                required
+                placeholder="admin@foregood.com"
+                autocomplete="email"
+              />
+            </div>
+          </div>
+
+          <div class="form-group-modern">
+            <label for="adminPassword">Kata Sandi</label>
+            <div class="input-with-icon">
+              <span class="field-icon">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </span>
+              <input
+                type="password"
+                id="adminPassword"
+                required
+                placeholder="••••••••"
+                autocomplete="current-password"
+              />
+              <button
+                type="button"
+                class="btn-toggle-eye"
+                id="btnTogglePassword"
+                onclick="togglePasswordVisibility()"
+                title="Lihat Sandi"
+              >
+                <svg
+                  id="eyeIcon"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-login-submit" id="btnLogin">
+            <span>Masuk Dashboard</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </form>
+
+        <div class="login-footer-badge">
+          <span>ForeGood Point of Sale • v2.1</span>
         </div>
-        <button type="submit" class="btn-admin-login" id="btnLogin">Masuk</button>
-      </form>
+      </div>
     </div>
 
-    <!-- Papan Antrean (FIFO) -->
-    <main class="queue-board" id="queueBoard" style="display: none;">
-      <!-- Kartu-kartu pesanan dirender via admin.js -->
+    <!-- PANEL 1: Papan Antrean (FIFO) -->
+    <div
+      id="queueSection"
+      style="
+        display: none;
+        max-width: 1100px;
+        margin: 20px auto 0;
+        padding: 0 16px;
+      "
+    >
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 14px;
+          flex-wrap: wrap;
+          gap: 10px;
+        "
+      >
+        <div>
+          <h2
+            style="margin: 0; font-size: 1.25rem; color: var(--primary-coffee)"
+          >
+            Antrean Berjalan
+          </h2>
+          <p
+            style="margin: 2px 0 0; font-size: 0.8rem; color: var(--text-muted)"
+          >
+            Pesanan FIFO yang sedang diproses barista
+          </p>
+        </div>
+
+        <!-- Tombol Reset Antrean -->
+        <button
+          type="button"
+          class="btn-reset-queue"
+          onclick="openResetQueueModal()"
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+          <span>Reset Nomor Antrean</span>
+        </button>
+      </div>
+
+      <!-- Grid Kartu Antrean -->
+      <main
+        class="queue-board"
+        id="queueBoard"
+        style="margin: 0; padding: 0"
+      ></main>
+    </div>
+
+    <!-- PANEL 2: Kelola Menu (CRUD) -->
+    <main class="crud-container" id="menuBoard" style="display: none">
+      <div class="crud-header-bar">
+        <h2>Daftar Menu ForeGood</h2>
+        <button class="btn-add-menu" onclick="openAddMenuModal()">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          <span>Tambah Menu Baru</span>
+        </button>
+      </div>
+
+      <div class="menu-grid-admin" id="adminMenuList">
+        <!-- List menu dirender via admin.js -->
+      </div>
     </main>
 
-    <script src="admin.js"></script>
+    <!-- PANEL 3: Kelola Kategori (CRUD) -->
+    <main class="crud-container" id="categoryBoard" style="display: none">
+      <div class="crud-header-bar">
+        <div>
+          <h2>Kategori Menu ForeGood</h2>
+          <p
+            style="margin: 3px 0 0; font-size: 0.8rem; color: var(--text-muted)"
+          >
+            Kelola pengelompokan sajian booth/kafe
+          </p>
+        </div>
+        <button class="btn-add-menu" onclick="openAddCategoryModal()">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          <span>Tambah Kategori</span>
+        </button>
+      </div>
+
+      <div class="category-grid-admin" id="adminCategoryList">
+        <!-- List kategori dirender via admin.js -->
+      </div>
+    </main>
+
+    <!-- PANEL 4: Riwayat Pesanan Selesai -->
+    <main class="crud-container" id="historyBoard" style="display: none">
+      <!-- Baris Statistik Ringkas -->
+      <div class="history-stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon revenue-icon">💰</div>
+          <div class="stat-info">
+            <span class="stat-label">Total Omzet Selesai</span>
+            <h3 class="stat-value" id="statTotalRevenue">Rp 0</h3>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orders-icon">☕</div>
+          <div class="stat-info">
+            <span class="stat-label">Pesanan Berhasil</span>
+            <h3 class="stat-value" id="statTotalOrders">0 Pesanan</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Header & Bar Pencarian -->
+      <div class="crud-header-bar" style="margin-top: 20px">
+        <div>
+          <h2>Riwayat Pesanan</h2>
+          <p
+            style="margin: 2px 0 0; font-size: 0.8rem; color: var(--text-muted)"
+          >
+            Daftar transaksi yang telah selesai diserahkan
+          </p>
+        </div>
+        <div class="history-controls-row">
+          <div class="history-search-wrap">
+            <svg
+              class="search-inner-icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              type="text"
+              id="historySearchInput"
+              placeholder="Cari nama atau no. antrean..."
+              oninput="handleSearchHistory()"
+            />
+          </div>
+
+          <button
+            type="button"
+            class="btn-clear-history-compact"
+            onclick="openClearHistoryModal()"
+            title="Bersihkan Riwayat"
+          >
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path
+                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+              ></path>
+            </svg>
+            <span class="btn-clear-text">Bersihkan</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabel / Daftar Riwayat -->
+      <div class="history-list" id="historyOrderList">
+        <!-- Render otomatis via JS -->
+      </div>
+    </main>
+
+    <!-- MODAL FORM TAMBAH / EDIT KATEGORI -->
+    <div class="modal-crud" id="modalCategory">
+      <div class="modal-crud-card" style="max-width: 380px">
+        <div class="modal-crud-header">
+          <h3 id="modalCategoryTitle">Tambah Kategori Baru</h3>
+          <button
+            type="button"
+            class="closebtn-inline"
+            onclick="closeCategoryModal()"
+          >
+            ✕
+          </button>
+        </div>
+
+        <form id="formCategory">
+          <input type="hidden" id="categoryId" />
+
+          <div class="form-group">
+            <label for="categoryName"
+              >Nama Kategori <span class="required">*</span></label
+            >
+            <input
+              type="text"
+              id="categoryName"
+              required
+              placeholder="Contoh: Mocktail, Bakery, Seasonal"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="btn-admin-login"
+            id="btnSaveCategory"
+            style="margin-top: 14px"
+          >
+            Simpan Kategori
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL FORM TAMBAH / EDIT MENU -->
+    <div class="modal-crud" id="modalMenu">
+      <div class="modal-crud-card">
+        <div class="modal-crud-header">
+          <h3 id="modalMenuTitle">Tambah Menu Baru</h3>
+          <button
+            type="button"
+            class="closebtn-inline"
+            onclick="closeMenuModal()"
+          >
+            ✕
+          </button>
+        </div>
+
+        <form id="formMenu">
+          <input type="hidden" id="menuId" />
+          <input type="hidden" id="menuExistingUrl" />
+
+          <!-- Label Foto Menu -->
+          <div style="margin-bottom: 6px">
+            <label
+              style="
+                font-size: 0.82rem;
+                font-weight: 700;
+                color: var(--text-main);
+              "
+            >
+              Foto Menu
+              <span
+                style="
+                  font-weight: 400;
+                  color: var(--text-muted);
+                  font-size: 0.75rem;
+                "
+                >(Rekomendasi rasio 1:1 atau vertikal)</span
+              >
+            </label>
+          </div>
+
+          <!-- Upload Box persis desain Flutter UI ForeGood -->
+          <div
+            class="photo-dropzone"
+            id="photoDropzone"
+            onclick="openPhotoPickerSheet()"
+          >
+            <img
+              id="imgPreview"
+              class="photo-preview-img"
+              src=""
+              alt="Pratinjau Foto"
+            />
+
+            <div class="photo-placeholder" id="photoPlaceholder">
+              <div class="icon-circle">
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"
+                  />
+                  <line x1="16" y1="5" x2="22" y2="5" />
+                  <line x1="19" y1="2" x2="19" y2="8" />
+                  <circle cx="9" cy="9" r="2" />
+                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                </svg>
+              </div>
+              <h4>Unggah Foto Produk</h4>
+              <p>Ketuk untuk memilih dari kamera atau galeri</p>
+            </div>
+
+            <!-- Badge Tombol di pojok kanan bawah -->
+            <button
+              type="button"
+              class="btn-badge-photo"
+              id="btnPhotoBadge"
+              onclick="
+                event.stopPropagation();
+                openPhotoPickerSheet();
+              "
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+                />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+              <span id="txtPhotoBadge">Pilih Foto</span>
+            </button>
+          </div>
+
+          <!-- Hidden Input Kamera & File Picker -->
+          <input
+            type="file"
+            id="fileCamera"
+            accept="image/*"
+            capture="environment"
+            style="display: none"
+            onchange="handleFileSelected(event)"
+          />
+          <input
+            type="file"
+            id="fileGallery"
+            accept="image/*"
+            style="display: none"
+            onchange="handleFileSelected(event)"
+          />
+
+          <div class="form-group" style="margin-top: 16px">
+            <label for="menuKategori"
+              >Kategori Menu <span class="required">*</span></label
+            >
+            <select
+              id="menuKategori"
+              required
+              style="
+                width: 100%;
+                padding: 11px 14px;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                font-family: &quot;Manrope&quot;, sans-serif;
+                background: #fff;
+                font-size: 0.9rem;
+              "
+            ></select>
+          </div>
+
+          <div class="form-group">
+            <label for="menuName"
+              >Nama Menu <span class="required">*</span></label
+            >
+            <input
+              type="text"
+              id="menuName"
+              required
+              placeholder="Contoh: Sea Salt Latte"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="menuPrice"
+              >Harga (Rp) <span class="required">*</span></label
+            >
+            <input type="number" id="menuPrice" required placeholder="20000" />
+          </div>
+
+          <div class="form-group">
+            <label for="menuDesc">Deskripsi Sajian</label>
+            <textarea
+              id="menuDesc"
+              rows="3"
+              placeholder="Jelaskan aroma atau bahan racikan menu..."
+              style="
+                width: 100%;
+                padding: 10px 14px;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                font-family: &quot;Manrope&quot;, sans-serif;
+                font-size: 0.88rem;
+                outline: none;
+                resize: none;
+              "
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="btn-admin-login"
+            id="btnSaveMenu"
+            style="margin-top: 14px"
+          >
+            Simpan Menu
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- BOTTOM SHEET: PILIH SUMBER FOTO PERSIS GAMBAR RUJUKAN -->
+    <div
+      class="overlay photo-sheet-overlay"
+      id="photoPickerOverlay"
+      onclick="closePhotoPickerSheet(event)"
+    >
+      <div class="sheet photo-picker-sheet" id="photoPickerSheet">
+        <div class="sheet-drag-area">
+          <div class="grabber"></div>
+        </div>
+
+        <h3 class="picker-sheet-title">Pilih Sumber Foto</h3>
+
+        <div class="picker-option-list">
+          <!-- Opsi Galeri -->
+          <div class="picker-option-item" onclick="triggerPickGallery()">
+            <div class="picker-icon-box gallery-icon">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                <circle cx="9" cy="9" r="2" />
+                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+              </svg>
+            </div>
+            <div class="picker-option-text">
+              <h4>Galeri Perangkat</h4>
+              <p>Pilih dari penyimpanan foto atau file</p>
+            </div>
+          </div>
+
+          <!-- Opsi Kamera -->
+          <div class="picker-option-item" onclick="triggerPickCamera()">
+            <div class="picker-icon-box camera-icon">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"
+                />
+                <circle cx="12" cy="13" r="3" />
+              </svg>
+            </div>
+            <div class="picker-option-text">
+              <h4>Ambil dari Kamera</h4>
+              <p>Potret langsung sajian menu kafe</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Melayang -->
+    <div id="toastNotification" class="toast-box">
+      <span class="toast-icon" id="toastIcon">✓</span>
+      <span class="toast-message" id="toastMessage"
+        >Kategori berhasil disimpan!</span
+      >
+    </div>
+
+    <!-- Modal Konfirmasi Hapus Estetik -->
+    <div class="modal-crud" id="modalConfirmDelete">
+      <div class="modal-crud-card" style="max-width: 360px; text-align: center">
+        <div
+          style="
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #ffebee;
+            color: #d32f2f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+          "
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path
+              d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+            ></path>
+          </svg>
+        </div>
+        <h3
+          style="margin: 0 0 6px; font-size: 1.15rem; color: var(--text-main)"
+        >
+          Hapus Kategori?
+        </h3>
+        <p
+          id="confirmDeleteText"
+          style="
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0 0 20px;
+            line-height: 1.5;
+          "
+        ></p>
+
+        <div style="display: flex; gap: 10px">
+          <button
+            type="button"
+            class="btn-mini-action"
+            style="flex: 1; padding: 11px; font-size: 0.88rem"
+            onclick="closeConfirmModal()"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            class="btn-action btn-pay"
+            id="btnExecuteDelete"
+            style="
+              flex: 1;
+              padding: 11px;
+              background: #d32f2f;
+              font-size: 0.88rem;
+            "
+          >
+            Hapus Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Konfirmasi Reset Antrean -->
+    <div class="modal-crud" id="modalResetQueue">
+      <div class="modal-crud-card" style="max-width: 380px; text-align: center">
+        <div
+          style="
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #fff3e0;
+            color: #e65100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+          "
+        >
+          <svg
+            width="26"
+            height="26"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+        </div>
+        <h3
+          style="
+            margin: 0 0 8px;
+            font-size: 1.15rem;
+            color: var(--primary-coffee);
+          "
+        >
+          Reset Antrean ke #001?
+        </h3>
+        <p
+          style="
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin: 0 0 20px;
+          "
+        >
+          Tindakan ini akan mengarsipkan seluruh pesanan aktif dan pesanan
+          berikutnya dari pelanggan akan kembali dimulai dari nomor <b>#001</b>.
+        </p>
+
+        <div style="display: flex; gap: 10px">
+          <button
+            type="button"
+            class="btn-mini-action"
+            style="flex: 1; padding: 11px; font-size: 0.88rem"
+            onclick="closeResetQueueModal()"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            class="btn-action btn-pay"
+            id="btnConfirmResetQueue"
+            style="flex: 1; padding: 11px; font-size: 0.88rem"
+            onclick="executeResetQueue()"
+          >
+            Ya, Reset ke #001
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI BERSIHKAN RIWAYAT -->
+    <div class="modal-crud" id="modalClearHistory">
+      <div class="modal-crud-card" style="max-width: 380px; text-align: center">
+        <div
+          style="
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #ffebee;
+            color: #d32f2f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+          "
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path
+              d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+            ></path>
+          </svg>
+        </div>
+        <h3
+          style="
+            margin: 0 0 8px;
+            font-size: 1.15rem;
+            color: var(--primary-coffee);
+          "
+        >
+          Bersihkan Semua Riwayat?
+        </h3>
+        <p
+          style="
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin: 0 0 20px;
+          "
+        >
+          Semua catatan pesanan yang telah <b>selesai</b> dan rekap data
+          penjualan saat ini akan dihapus permanen dari sistem.
+        </p>
+
+        <div style="display: flex; gap: 10px">
+          <button
+            type="button"
+            class="btn-mini-action"
+            style="flex: 1; padding: 11px; font-size: 0.88rem"
+            onclick="closeClearHistoryModal()"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            class="btn-action btn-pay"
+            id="btnExecuteClearHistory"
+            style="
+              flex: 1;
+              padding: 11px;
+              background: #d32f2f;
+              font-size: 0.88rem;
+            "
+            onclick="executeClearHistory()"
+          >
+            Ya, Bersihkan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus Produk Menu -->
+    <div class="modal-crud" id="modalConfirmDeleteMenu">
+      <div class="modal-crud-card" style="max-width: 380px; text-align: center">
+        <div
+          style="
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #ffebee;
+            color: #d32f2f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+          "
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path
+              d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+            ></path>
+          </svg>
+        </div>
+        <h3
+          style="
+            margin: 0 0 8px;
+            font-size: 1.15rem;
+            color: var(--primary-coffee);
+          "
+        >
+          Hapus Menu?
+        </h3>
+        <p
+          id="confirmDeleteMenuText"
+          style="
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0 0 20px;
+            line-height: 1.5;
+          "
+        ></p>
+
+        <div style="display: flex; gap: 10px">
+          <button
+            type="button"
+            class="btn-mini-action"
+            style="flex: 1; padding: 11px; font-size: 0.88rem"
+            onclick="closeConfirmDeleteMenuModal()"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            class="btn-action btn-pay"
+            id="btnExecuteDeleteMenu"
+            style="
+              flex: 1;
+              padding: 11px;
+              background: #d32f2f;
+              font-size: 0.88rem;
+            "
+          >
+            Hapus Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI LOGOUT -->
+    <div class="modal-crud" id="modalConfirmLogout">
+      <div class="modal-crud-card" style="max-width: 380px; text-align: center">
+        <div
+          style="
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #fff3e0;
+            color: #e65100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+          "
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </div>
+        <h3
+          style="
+            margin: 0 0 8px;
+            font-size: 1.15rem;
+            color: var(--primary-coffee);
+          "
+        >
+          Keluar dari Dashboard?
+        </h3>
+        <p
+          style="
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin: 0 0 20px;
+          "
+        >
+          Sesi admin akan diakhiri. Kamu harus memasukkan email dan kata sandi
+          kembali untuk mengelola antrean atau menu.
+        </p>
+
+        <div style="display: flex; gap: 10px">
+          <button
+            type="button"
+            class="btn-mini-action"
+            style="flex: 1; padding: 11px; font-size: 0.88rem"
+            onclick="closeLogoutModal()"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            class="btn-action btn-pay"
+            id="btnExecuteLogout"
+            style="
+              flex: 1;
+              padding: 11px;
+              background: #d32f2f;
+              font-size: 0.88rem;
+            "
+            onclick="executeLogout()"
+          >
+            Ya, Keluar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="admin.js?v=2.1"></script>
   </body>
 </html>

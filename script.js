@@ -41,6 +41,23 @@ const ticketCustomerEl = document.getElementById("ticketCustomer");
 const ticketTotalEl = document.getElementById("ticketTotal");
 const btnCloseTicket = document.getElementById("btnCloseTicket");
 
+// Elemen Tracker Pesanan
+const floatingTrackerPill = document.getElementById("floatingTrackerPill");
+const floatingPillText = document.getElementById("floatingPillText");
+const ticketBadge = document.getElementById("ticketBadge");
+const ticketInstructionBox = document.getElementById("ticketInstructionBox");
+const ticketInstructionText = document.getElementById("ticketInstructionText");
+const step1 = document.getElementById("step1");
+const step2 = document.getElementById("step2");
+const step3 = document.getElementById("step3");
+const line1 = document.getElementById("line1");
+const line2 = document.getElementById("line2");
+
+let activeUserOrderId =
+  localStorage.getItem("foregood_active_order_id") || null;
+let userRealtimeChannel = null;
+let productRealtimeChannel = null;
+
 function formatRupiah(num) {
   return "Rp " + Number(num).toLocaleString("id-ID");
 }
@@ -77,6 +94,44 @@ function addToCart(productId, e) {
   updateCartUI();
 }
 
+const btnClearCart = document.getElementById("btnClearCart");
+const confirmClearOverlay = document.getElementById("confirmClearOverlay");
+const btnCancelClear = document.getElementById("btnCancelClear");
+const btnExecuteClear = document.getElementById("btnExecuteClear");
+
+// 1. Buka Modal Konfirmasi
+if (btnClearCart) {
+  btnClearCart.addEventListener("click", () => {
+    if (cart.length === 0) return;
+    if (confirmClearOverlay) confirmClearOverlay.classList.add("show");
+  });
+}
+
+// 2. Tutup / Batalkan Modal
+if (btnCancelClear) {
+  btnCancelClear.addEventListener("click", () => {
+    if (confirmClearOverlay) confirmClearOverlay.classList.remove("show");
+  });
+}
+
+// 3. Eksekusi Pengosongan Keranjang
+if (btnExecuteClear) {
+  btnExecuteClear.addEventListener("click", () => {
+    // Kosongkan data pesanan
+    cart = [];
+    updateCartUI();
+
+    // Tutup kedua modal (modal konfirmasi & sheet keranjang)
+    if (confirmClearOverlay) confirmClearOverlay.classList.remove("show");
+    closeCartModal();
+
+    // Reset input form pembeli
+    if (custNameInput) custNameInput.value = "";
+    if (custWaInput) custWaInput.value = "";
+    if (custNoteInput) custNoteInput.value = "";
+  });
+}
+
 function updateCartQty(productId, delta) {
   const itemIndex = cart.findIndex((item) => item.product.id === productId);
   if (itemIndex === -1) return;
@@ -111,6 +166,50 @@ function updateCartUI() {
       closeCartModal();
     }
   }
+}
+
+// ----------------------------------------------------
+// REALTIME LISTENER UNTUK KATALOG PRODUK
+// ----------------------------------------------------
+function listenToProductChanges() {
+  if (productRealtimeChannel) {
+    supa.removeChannel(productRealtimeChannel);
+  }
+
+  productRealtimeChannel = supa
+    .channel("public-products-channel")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "produk",
+      },
+      (payload) => {
+        console.log("Perubahan produk terdeteksi secara realtime:", payload);
+
+        loadData();
+
+        if (payload.eventType === "UPDATE" && payload.new?.tersedia === false) {
+          handleProductSoldOutInCart(payload.new.id, payload.new.nama);
+        }
+      },
+    )
+    .subscribe((status) => {
+      console.log("Status koneksi Realtime Produk:", status);
+    });
+}
+
+function handleProductSoldOutInCart(productId, productName) {
+  const itemIndex = cart.findIndex((item) => item.product.id === productId);
+  if (itemIndex === -1) return;
+
+  cart.splice(itemIndex, 1);
+  updateCartUI();
+  renderCartSheet();
+  alert(
+    `Mohon maaf, menu "${productName}" baru saja habis dan dikeluarkan dari keranjang.`,
+  );
 }
 
 function renderCartSheet() {
@@ -166,6 +265,128 @@ if (cartOverlay) {
 }
 
 // ----------------------------------------------------
+// TRACKER STATUS PESANAN REALTIME
+// ----------------------------------------------------
+function updateOrderTrackerUI(order) {
+  if (!order) return;
+
+  const formattedNo = `#${String(order.nomor_antrean).padStart(3, "0")}`;
+  if (ticketNumberEl) ticketNumberEl.textContent = formattedNo;
+  if (ticketCustomerEl) ticketCustomerEl.textContent = order.nama_customer;
+  if (ticketTotalEl)
+    ticketTotalEl.textContent = formatRupiah(order.total_harga);
+
+  [step1, step2, step3].forEach((step) =>
+    step?.classList.remove("active", "done"),
+  );
+  [line1, line2].forEach((line) => line?.classList.remove("done"));
+
+  if (order.status === "menunggu_pembayaran") {
+    ticketBadge.className = "ticket-badge status-menunggu";
+    ticketBadge.textContent = "MENUNGGU PEMBAYARAN";
+    step1?.classList.add("active");
+    ticketInstructionText.textContent =
+      "Silakan tunjukkan nomor antrean ini ke kasir/booth untuk pembayaran Tunai atau scan QRIS.";
+    btnCloseTicket.textContent = "Tutup & Kembali ke Menu";
+    if (floatingPillText)
+      floatingPillText.textContent = `Antrean ${formattedNo} • Menunggu Bayar`;
+  } else if (order.status === "diproses") {
+    ticketBadge.className = "ticket-badge status-proses";
+    ticketBadge.textContent = "SEDANG DIRACIK";
+    step1?.classList.add("done");
+    line1?.classList.add("done");
+    step2?.classList.add("active");
+    ticketInstructionText.textContent =
+      "Pembayaran diterima! Barista kami sedang meracik pesanan spesialmu. Silakan ditunggu dengan santai ya.";
+    btnCloseTicket.textContent = "Tutup (Pesanan Tetap Berjalan)";
+    if (floatingPillText)
+      floatingPillText.textContent = `Antrean ${formattedNo} • Sedang Diracik`;
+  } else if (order.status === "siap_diambil") {
+    ticketBadge.className = "ticket-badge status-siap";
+    ticketBadge.textContent = "SIAP DIAMBIL!";
+    step1?.classList.add("done");
+    line1?.classList.add("done");
+    step2?.classList.add("done");
+    line2?.classList.add("done");
+    step3?.classList.add("active");
+    ticketInstructionText.innerHTML =
+      "<b>Pesananmu sudah siap!</b> Silakan merapat ke booth pengambilan dan sebutkan nomor antrean ini.";
+    btnCloseTicket.textContent = "Mengerti";
+    if (floatingPillText)
+      floatingPillText.textContent = `Antrean ${formattedNo} SIAP DIAMBIL!`;
+    if ("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
+  } else if (order.status === "selesai") {
+    ticketBadge.className = "ticket-badge status-selesai";
+    ticketBadge.textContent = "PESANAN SELESAI";
+    [step1, step2, step3].forEach((step) => step?.classList.add("done"));
+    [line1, line2].forEach((line) => line?.classList.add("done"));
+    ticketInstructionText.textContent =
+      "Pesanan telah selesai diserahkan. Terima kasih sudah menikmati sajian Foregood Coffee!";
+    btnCloseTicket.textContent = "Selesai & Kembali ke Menu";
+    localStorage.removeItem("foregood_active_order_id");
+    activeUserOrderId = null;
+    if (floatingTrackerPill) floatingTrackerPill.style.display = "none";
+    if (userRealtimeChannel) {
+      supa.removeChannel(userRealtimeChannel);
+      userRealtimeChannel = null;
+    }
+  } else {
+    return;
+  }
+
+  if (floatingTrackerPill && activeUserOrderId) {
+    floatingTrackerPill.style.display = "flex";
+  }
+}
+
+function listenToUserOrder(orderId) {
+  if (userRealtimeChannel) supa.removeChannel(userRealtimeChannel);
+
+  userRealtimeChannel = supa
+    .channel(`order-track-${orderId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "pesanan",
+        filter: `id=eq.${orderId}`,
+      },
+      (payload) => {
+        console.log("Update status pesanan pelanggan:", payload.new);
+        updateOrderTrackerUI(payload.new);
+      },
+    )
+    .subscribe();
+}
+
+async function restoreActiveOrder() {
+  if (!activeUserOrderId) return;
+
+  const { data: order, error } = await supa
+    .from("pesanan")
+    .select("id, nomor_antrean, nama_customer, total_harga, status")
+    .eq("id", activeUserOrderId)
+    .maybeSingle();
+
+  if (error || !order || order.status === "selesai") {
+    localStorage.removeItem("foregood_active_order_id");
+    activeUserOrderId = null;
+    return;
+  }
+
+  updateOrderTrackerUI(order);
+  listenToUserOrder(order.id);
+}
+
+window.reopenTicketModal = function () {
+  if (!activeUserOrderId || !queueOverlay) return;
+  if (floatingTrackerPill) floatingTrackerPill.style.display = "none";
+  queueOverlay.classList.add("show");
+  document.body.style.overflow = "hidden";
+};
+
+// ----------------------------------------------------
 // CHECKOUT & SISTEM ANTREAN (FIFO)
 // ----------------------------------------------------
 if (btnSubmitOrder) {
@@ -191,21 +412,37 @@ if (btnSubmitOrder) {
         0,
       );
 
-      // Hitung urutan antrean sederhana berdasarkan jumlah pesanan yang ada
-      const { count, error: countErr } = await supa
+      // 1. Ambil waktu terakhir admin menekan tombol reset
+      const { data: settingData } = await supa
+        .from("pengaturan")
+        .select("nilai")
+        .eq("kunci", "terakhir_reset_antrean")
+        .single();
+
+      const lastResetTime = settingData?.nilai || "1970-01-01T00:00:00Z";
+
+      // 2. Cari nomor antrean tertinggi yang dibuat setelah waktu reset
+      const { data: latestOrders, error: latestErr } = await supa
         .from("pesanan")
-        .select("*", { count: "exact", head: true });
+        .select("nomor_antrean")
+        .gte("created_at", lastResetTime)
+        .order("nomor_antrean", { ascending: false })
+        .limit(1);
 
-      if (countErr) throw countErr;
+      if (latestErr) throw latestErr;
 
-      const queueNumber = (count || 0) + 1;
+      let nextQueueNumber = 1;
+
+      if (latestOrders && latestOrders.length > 0) {
+        nextQueueNumber = Number(latestOrders[0].nomor_antrean) + 1;
+      }
 
       // 1. Simpan header pesanan
       const { data: newOrder, error: orderErr } = await supa
         .from("pesanan")
         .insert([
           {
-            nomor_antrean: queueNumber,
+            nomor_antrean: nextQueueNumber,
             nama_customer: name,
             no_wa: wa || null,
             total_harga: totalHarga,
@@ -235,14 +472,12 @@ if (btnSubmitOrder) {
 
       if (itemsErr) throw itemsErr;
 
-      // Tampilkan tiket nomor antrean
-      if (ticketNumberEl)
-        ticketNumberEl.textContent = `#${String(queueNumber).padStart(3, "0")}`;
-      if (ticketCustomerEl) ticketCustomerEl.textContent = name;
-      if (ticketTotalEl) ticketTotalEl.textContent = formatRupiah(totalHarga);
+      activeUserOrderId = String(newOrder.id);
+      localStorage.setItem("foregood_active_order_id", activeUserOrderId);
+      updateOrderTrackerUI(newOrder);
+      listenToUserOrder(activeUserOrderId);
 
       closeCartModal();
-      if (queueOverlay) queueOverlay.classList.add("show");
 
       // Reset form dan keranjang
       cart = [];
@@ -250,6 +485,11 @@ if (btnSubmitOrder) {
       if (custWaInput) custWaInput.value = "";
       if (custNoteInput) custNoteInput.value = "";
       updateCartUI();
+
+      if (queueOverlay) {
+        queueOverlay.classList.add("show");
+        document.body.style.overflow = "hidden";
+      }
     } catch (err) {
       console.error(err);
       alert("Gagal mengirim pesanan. Silakan periksa koneksi internet.");
@@ -263,6 +503,9 @@ if (btnSubmitOrder) {
 if (btnCloseTicket) {
   btnCloseTicket.addEventListener("click", () => {
     if (queueOverlay) queueOverlay.classList.remove("show");
+    if (floatingTrackerPill && activeUserOrderId) {
+      floatingTrackerPill.style.display = "flex";
+    }
     document.body.style.overflow = "";
   });
 }
@@ -288,6 +531,7 @@ function renderSkeleton() {
 function renderPills() {
   const priorityOrder = [
     "coffee",
+    "non coffee",
     "noncoffee",
     "ice cream",
     "cemilan",
@@ -497,8 +741,9 @@ async function loadData() {
       supa
         .from("produk")
         .select(
-          "id, nama, harga, deskripsi, gambar_url, kategori:kategori_id(nama)",
+          "id, nama, harga, deskripsi, gambar_url, tersedia, kategori:kategori_id(nama)",
         )
+        .eq("tersedia", true)
         .order("id", { ascending: false }),
     ]);
 
@@ -521,3 +766,5 @@ async function loadData() {
 }
 
 loadData();
+listenToProductChanges();
+restoreActiveOrder();
